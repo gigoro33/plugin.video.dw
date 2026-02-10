@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.dw" name="Deutsche Welle" version="1.0.1" provider-name="fraser">
+<addon id="plugin.video.dw" name="Deutsche Welle" version="0.0.1" provider-name="gigoro33">
     <requires>
         <import addon="xbmc.python" version="3.0.1"/>
-        <import addon="script.module.routing" version="0.2.0"/>
-        <import addon="script.module.beautifulsoup4" version="4.3.2"/>
-        <import addon="script.module.requests" version="2.12.4"/>
-        <import addon="script.module.cache" version="1.0.4"/>
+        <import addon="script.module.codequick"/>
+        <import addon="script.module.simplejson"/>
     </requires>
-    <extension point="xbmc.python.pluginsource" library="main.py">
+    <extension point="xbmc.python.pluginsource" library="addon.py">
         <provides>video</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
