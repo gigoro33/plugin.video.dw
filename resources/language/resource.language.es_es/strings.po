@@ -26,7 +26,7 @@ msgstr ""
 
 msgctxt "#32002"
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
 msgctxt "#32003"
 msgid "!UNUSED!"
@@ -42,7 +42,7 @@ msgstr ""
 
 msgctxt "#32006"
 msgid "Live"
-msgstr ""
+msgstr "En Vivo"
 
 msgctxt "#32007"
 msgid "Search"
@@ -54,7 +54,7 @@ msgstr ""
 
 msgctxt "#32009"
 msgid "Shows"
-msgstr "Shows"
+msgstr "Programas"
 
 msgctxt "#32010"
 msgid "Settings"
@@ -110,4 +110,4 @@ msgstr ""
 
 msgctxt "#32023"
 msgid "Podcast"
-msgstr ""
+msgstr "Podcast"

@@ -1,6 +1,7 @@
 from codequick import Route, Listitem, run, Script, utils
 from resources.lib.EndPoints import EndPoints
 from resources.lib.OnDemand import OnDemand
+from resources.lib.LiveTv import LiveTv
 import simplejson as json
 import requests
 import xbmcaddon
@@ -11,7 +12,13 @@ _ = addon.getLocalizedString
 
 
 @Route.register
-def root(plugin):    
+def root(plugin):  
+    # Live TV
+    item = Listitem()
+    item.label = _(32006)
+    item.set_callback(LiveTv.get_live_tv_channels)
+    yield item
+
     # Shows
     item = Listitem()
     item.label = _(32009)

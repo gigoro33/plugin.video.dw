@@ -26,7 +26,7 @@ msgstr ""
 
 msgctxt "#32002"
 msgid "Language"
-msgstr ""
+msgstr "Sprache"
 
 msgctxt "#32003"
 msgid "!UNUSED!"
@@ -42,7 +42,7 @@ msgstr ""
 
 msgctxt "#32006"
 msgid "Live"
-msgstr ""
+msgstr "Live"
 
 msgctxt "#32007"
 msgid "Search"
@@ -110,4 +110,4 @@ msgstr ""
 
 msgctxt "#32023"
 msgid "Podcast"
-msgstr ""
+msgstr "Podcast"

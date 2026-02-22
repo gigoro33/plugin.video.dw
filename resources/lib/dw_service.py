@@ -40,3 +40,13 @@ class DWService:
             return []
         
         return content
+
+    def get_live_tv(self):
+        variables = {"channelNames": [], "app_name": app_name}
+        data = self.api.execute("getLiveTV", GET_LIVE_TV, variables)
+
+        livestream_channels = data.get("livestreamChannels") or []
+        if not livestream_channels:
+            return []
+
+        return livestream_channels

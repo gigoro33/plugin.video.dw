@@ -148,3 +148,23 @@ fragment AudioFields on Audio {
   trackingId trackingDate trackingTopicsCommaJoined trackingRegionsCommaJoined language
 }
 """
+
+GET_LIVE_TV = """
+query getLiveTV($channelNames: [ChannelNames]!) {
+  __typename livestreamChannels(channelNames: $channelNames) {
+    __typename id language name title livestreamUrl isRtl nextTimeSlots {
+      __typename startDate endDate isRtl program {
+        __typename title subTitle teaser mainContentImage {
+          __typename staticUrl
+        }
+      }
+      programElement {
+        __typename title teaser
+      }
+    }
+    namedUrl trackingId trackingDate mainContentImage {
+      __typename staticUrl
+    }
+  }
+}
+"""
