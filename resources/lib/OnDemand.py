@@ -1,103 +1,54 @@
 from codequick import Route, Listitem, run, Script, utils, Resolver
+from resources.lib.dw_api import DWGraphQL
+from resources.lib.dw_service import DWService
 from resources.lib.EndPoints import EndPoints
 import simplejson as json
 import requests
 
+api = DWGraphQL()
+svc = DWService(api)
+
 class OnDemand:
     @Route.register
-    def get_topics(plugin, language_id):
-        item = Listitem()
-        item.label = "Todos los programas"
-        item.set_callback(OnDemand.get_program_list, language_id=language_id)
-        yield item
+    def get_program_list(plugin, language_id, content_type):
+        content_type = "videoPrograms" if content_type == "video" else "audioPrograms"
+        shows = svc.get_show_list(language_id)[content_type]
+        for show in shows:
+            item = Listitem()
+            item.label = show.get("name", "")
+            item.info["plot"] = show.get("teaser") or ""
 
-        resp = requests.get(EndPoints.TOPICS.format(language_id=language_id))
+            img = (show.get("mainContentImage") or {}).get("staticUrl")
+            img = img.replace("${formatId}", "604")
+            if img:
+                item.art["thumb"] = img
+                item.art["fanart"] = img
 
-        if resp.status_code == 200:
-            topics = json.loads(resp.text)
-            for topic in topics:
-                item = Listitem()
+            program_id = show.get("id")
 
-                # The image tag contains both the image url and title
-                # img = elem.find(".//img")
+            item.set_callback(OnDemand.get_video_list, program_id=program_id)
 
-                # Set the thumbnail image
-                # item.art["thumb"] = img.get("src")
-
-                # Set the title
-                item.label = topic["name"]
- 
-                item.set_callback(OnDemand.get_program_list, language_id=language_id, programs_filter=topic.get("programIds"))
-
-                # Return the listitem as a generator.
-                yield item
+            yield item
 
     @Route.register
-    def get_program_list(plugin, language_id, programs_filter=None):
-        resp = requests.get(EndPoints.PROGRAM_LIST.format(language_id=language_id))
+    def get_video_list(plugin, program_id):
+        videos = svc.get_show_episodes(program_id)
+        for video in videos:
+            item = Listitem()
+            item.label = video.get("name", "")
+            item.info["plot"] = video.get("teaser") or ""
+            item.info["duration"] = video.get("duration") or ""
+            item.info["premiered"] = video.get("contentDate") or ""
 
-        if resp.status_code == 200:
-            programs = json.loads(resp.text)
-            programs_filter_set = set(programs_filter) if programs_filter else None
-            for program in programs:
-                if programs_filter_set is not None and program.get("id") not in programs_filter_set:
-                    continue
-                item = Listitem()
+            img = video.get("posterImageUrl") or {}
+            if img:
+                item.art["thumb"] = img
+                item.art["fanart"] = img
 
-                # Set the thumbnail image
-                sizes_image = program.get("image", {}).get("sizes", [])
-                if sizes_image:
-                    item.art["thumb"] = sizes_image[-1]["url"]
-                
-                sizes_background = program.get("backgroundImage", {}).get("sizes", [])
-                if sizes_background:
-                    item.art["fanart"] = sizes_background[-1]["url"]
-                else:
-                    item.art["fanart"] = sizes_image[-1]["url"]
-
-                # Set the title
-                item.label = program["name"]
-                item.info["plot"] = program["teaser"]
-
-                program_id = program["id"]
-                item.set_callback(OnDemand.get_video_list, language_id=language_id, program_id=program_id)
-
-                # Return the listitem as a generator.
-                yield item
-
-    @Route.register
-    def get_video_list(plugin, language_id, program_id, page_number=1):
-        resp = requests.get(EndPoints.VIDEO_LIST.format(program_id=program_id,language_id=language_id,page_number=page_number))
-
-        if resp.status_code == 200:
-            videos = json.loads(resp.text)
-            for video in videos["items"]:
-                
-                item = Listitem()
-                sizes_image = video.get("image", {}).get("sizes", [])
-                if sizes_image:
-                    item.art["thumb"] = sizes_image[-1]["url"]
-                    item.art["fanart"] = sizes_image[-1]["url"]
-
-                item.label = video["name"]
-                item.info["plot"] = video["teaserText"]
-                item.info["duration"] = video["duration"]
-                item.info["date"] = video["displayDate"]
-
-                video_id=video["reference"]["id"]
-                item.set_callback(OnDemand.play_video, video_id=video_id)
-
-                yield item
+            video_id = video.get("id", "")
+            item.set_callback(OnDemand.play_video, video_id=video_id)
+            yield item
 
     @Resolver.register
     def play_video(plugin, video_id):
-        resp = requests.get(EndPoints.VIDEO_DETAIL.format(video_id=video_id))
-
-        if resp.status_code == 200:
-            video = json.loads(resp.text)
-            sources = (video.get("mainContent") or {}).get("sources") or []
-            for s in sources:
-                fmt = (s.get("format") or "").lower()
-                if fmt == "hls":
-                    return s.get("url")
-            return None
+        return svc.get_video_details(video_id).get("hlsVideoSrc") or svc.get_video_details(video_id).get("mp3Src")

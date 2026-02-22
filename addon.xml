@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.dw" name="Deutsche Welle" version="0.0.2" provider-name="gigoro33">
+<addon id="plugin.video.dw" name="Deutsche Welle" version="0.0.6" provider-name="gigoro33">
     <requires>
         <import addon="xbmc.python" version="3.0.1"/>
         <import addon="script.module.codequick"/>
